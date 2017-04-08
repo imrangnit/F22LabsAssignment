@@ -8,14 +8,19 @@
 
 import UIKit
 
-class ViewController: UIViewController {
+class ViewController: UIViewController,UITextFieldDelegate {
     
     @IBOutlet weak var scrlView:UIScrollView!
+    @IBOutlet weak var btnChat:UIButton!
+    @IBOutlet weak var txtChat:UITextField!
+    
+    
     
     var selectedImage : UIImage?
     var lastChatBubbleY: CGFloat = 10.0
     var internalPadding: CGFloat = 8.0
     var lastMessageType: Bool?
+    @IBOutlet weak var bottomLayout:NSLayoutConstraint!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -36,6 +41,8 @@ class ViewController: UIViewController {
         let objChat3 = ChatData(text: String(format:"%@ %@","Yes! Thank you so much!",emojiHappyStr) , chatType: true,status:"Seen")
         self.addChatBubble(objChat3)
         
+        self.addKeyboardNotifications()
+        
         // Do any additional setup after loading the view, typically from a nib.
     }
     
@@ -45,7 +52,100 @@ class ViewController: UIViewController {
     }
     
     
+    //MARK:- SEND Button IBAction
+    
+    @IBAction func enterChat() -> Void{
+        
+        self.txtChat.resignFirstResponder()
+        self.btnChat.enabled = false
+        
+        
+        let objChat = ChatData(text: String(format:"%@",self.txtChat.text!) , chatType: true,status:"Delivered")
+        self.addChatBubble(objChat)
+    }
+    
+    func addKeyboardNotifications() {
+        
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(ViewController.keyboardWillShow(_:)), name:UIKeyboardWillShowNotification, object: nil)
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(ViewController.keyboardWillHide(_:)), name:UIKeyboardWillHideNotification, object: nil)
+        
+    }
+    
+    // MARK:- Notification
+    func keyboardWillShow(notification: NSNotification) {
+        var info = notification.userInfo!
+        let keyboardFrame: CGRect = (info[UIKeyboardFrameEndUserInfoKey] as! NSValue).CGRectValue()
+        
+        UIView.animateWithDuration(1.0, animations: { () -> Void in
+            //self.buttomLayoutConstraint = keyboardFrame.size.height
+            self.bottomLayout.constant = keyboardFrame.size.height
+            
+        }) { (completed: Bool) -> Void in
+            //self.moveToLastMessage()
+        }
+    }
+    
+    func keyboardWillHide(notification: NSNotification) {
+        UIView.animateWithDuration(1.0, animations: { () -> Void in
+            self.bottomLayout.constant = 0.0
+        }) { (completed: Bool) -> Void in
+            //self.moveToLastMessage()
+        }
+    }
+    
+    
+    
+    //MARK:- UITextField Notification
+    
+    func textFieldDidBeginEditing(textField: UITextField) {
+        
+    }
+    
+    func textFieldDidEndEditing(textField: UITextField) {
+        
+    }
+    
+    func textFieldShouldReturn(textField: UITextField) -> Bool {
+        
+        textField.resignFirstResponder()
+        
+        
+        let objChat = ChatData(text: String(format:"%@",self.txtChat.text!) , chatType: true,status:"Delivered")
+        self.addChatBubble(objChat)
+        
+        
+        return true
+    }
+    
+    func textField(textField: UITextField, shouldChangeCharactersInRange range: NSRange, replacementString string: String) -> Bool {
+        var text: String
+        
+        if string.characters.count > 0 {
+            text = String(format:"%@%@",textField.text!, string);
+        } else {
+            let string = textField.text! as NSString
+            text = string.substringToIndex(string.length - 1) as String
+        }
+        if text.characters.count > 0 {
+            self.btnChat.enabled = true
+        } else {
+            self.btnChat.enabled = false
+        }
+        return true
+    }
+    
+    
+    
+    
     //MARK:- ChatBubble Method
+    
+    func moveToLatestMessage() {
+        
+        if self.scrlView.contentSize.height > CGRectGetHeight(self.scrlView.frame) {
+            let contentOffSet = CGPointMake(0.0, self.scrlView.contentSize.height - CGRectGetHeight(self.scrlView.frame))
+            self.scrlView.setContentOffset(contentOffSet, animated: true)
+        }
+    }
     
     
     func addChatBubble(objChatData:ChatData) -> Void {
@@ -53,12 +153,32 @@ class ViewController: UIViewController {
         let padding:CGFloat = 80
         
         let chatBubble = ChatBubbleView(objChat: objChatData, yPosition: lastChatBubbleY+padding)
+        
+        UIView.animateWithDuration(0.7, animations: {
+            
+            var frame = chatBubble.frame
+            frame.size.width = 0
+            chatBubble.frame = frame
+            chatBubble.transform = CGAffineTransformScale(CGAffineTransformIdentity, 1.0, 1.0)
+            
+            }, completion: {(complete:Bool) in
+                
+                UIView.beginAnimations(nil, context: nil)
+                UIView.setAnimationDuration(5.3)
+                UIView.commitAnimations()
+                
+        })
+        
+        
         self.scrlView.addSubview(chatBubble)
         
         lastChatBubbleY = CGRectGetMaxY(chatBubble.frame)
         
         self.scrlView.contentSize = CGSizeMake(CGRectGetWidth(scrlView.frame), lastChatBubbleY + internalPadding)
         
+        self.moveToLatestMessage()
+        
+        self.txtChat.text = ""
     }
     
     
