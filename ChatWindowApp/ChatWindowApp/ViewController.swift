@@ -14,17 +14,18 @@ class ViewController: UIViewController,UITextFieldDelegate {
     @IBOutlet weak var btnChat:UIButton!
     @IBOutlet weak var txtChat:UITextField!
     
-    
+    var isMyChat:Bool = true
     
     var selectedImage : UIImage?
     var lastChatBubbleY: CGFloat = 10.0
-    var internalPadding: CGFloat = 8.0
+    var internalPadding: CGFloat = 40.0
     var lastMessageType: Bool?
     @IBOutlet weak var bottomLayout:NSLayoutConstraint!
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        /*
         let emojiSadUnicode = "1F61E"
         let emojiSadStr = String(Character(UnicodeScalar(Int(emojiSadUnicode, radix: 16)!)))
         
@@ -32,14 +33,14 @@ class ViewController: UIViewController,UITextFieldDelegate {
         let emojiHappyStr = String(Character(UnicodeScalar(Int(emojiHappyUnicode, radix: 16)!)))
         
         
-        let objChat1 = ChatData(text: String(format:"%@","Hi Nora, is there still an available space") , chatType: true,status:"Delivered")
+        let objChat1 = ChatData(text: String(format:"%@","Hi Nora, is there still an available space") , chatType: true,status:"Seen")
         self.addChatBubble(objChat1)
         
         let objChat2 = ChatData(text: String(format:"%@ %@","Hey sure! Would you like me to save you a spot ", emojiSadStr), chatType: false,status:nil)
         self.addChatBubble(objChat2)
         
         let objChat3 = ChatData(text: String(format:"%@ %@","Yes! Thank you so much!",emojiHappyStr) , chatType: true,status:"Seen")
-        self.addChatBubble(objChat3)
+        self.addChatBubble(objChat3)*/
         
         self.addKeyboardNotifications()
         
@@ -60,7 +61,7 @@ class ViewController: UIViewController,UITextFieldDelegate {
         self.btnChat.enabled = false
         
         
-        let objChat = ChatData(text: String(format:"%@",self.txtChat.text!) , chatType: true,status:"Delivered")
+        let objChat = ChatData(text: String(format:"%@",self.txtChat.text!) , chatType: self.isMyChat,status:"Seen")
         self.addChatBubble(objChat)
     }
     
@@ -77,11 +78,10 @@ class ViewController: UIViewController,UITextFieldDelegate {
         let keyboardFrame: CGRect = (info[UIKeyboardFrameEndUserInfoKey] as! NSValue).CGRectValue()
         
         UIView.animateWithDuration(1.0, animations: { () -> Void in
-            //self.buttomLayoutConstraint = keyboardFrame.size.height
             self.bottomLayout.constant = keyboardFrame.size.height
             
         }) { (completed: Bool) -> Void in
-            //self.moveToLastMessage()
+            //self.moveToLatestMessage()
         }
     }
     
@@ -89,7 +89,7 @@ class ViewController: UIViewController,UITextFieldDelegate {
         UIView.animateWithDuration(1.0, animations: { () -> Void in
             self.bottomLayout.constant = 0.0
         }) { (completed: Bool) -> Void in
-            //self.moveToLastMessage()
+            //self.moveToLatestMessage()
         }
     }
     
@@ -110,7 +110,7 @@ class ViewController: UIViewController,UITextFieldDelegate {
         textField.resignFirstResponder()
         
         
-        let objChat = ChatData(text: String(format:"%@",self.txtChat.text!) , chatType: true,status:"Delivered")
+        let objChat = ChatData(text: String(format:"%@",self.txtChat.text!) , chatType: self.isMyChat,status:"Seen")
         self.addChatBubble(objChat)
         
         
@@ -156,6 +156,7 @@ class ViewController: UIViewController,UITextFieldDelegate {
         
         UIView.animateWithDuration(0.7, animations: {
             
+            self.scrlView.addSubview(chatBubble)
             var frame = chatBubble.frame
             frame.size.width = 0
             chatBubble.frame = frame
@@ -170,7 +171,7 @@ class ViewController: UIViewController,UITextFieldDelegate {
         })
         
         
-        self.scrlView.addSubview(chatBubble)
+        
         
         lastChatBubbleY = CGRectGetMaxY(chatBubble.frame)
         
@@ -179,6 +180,8 @@ class ViewController: UIViewController,UITextFieldDelegate {
         self.moveToLatestMessage()
         
         self.txtChat.text = ""
+        
+        self.isMyChat = !self.isMyChat
     }
     
     

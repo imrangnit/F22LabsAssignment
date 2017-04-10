@@ -86,11 +86,12 @@ class ChatBubbleView: UIView {
         
         if objChat.isMyChat == true{
             
-            let lblStatus = UILabel(frame: CGRectMake(startXChat, self.viewChat.frame.origin.y+self.viewChat.frame.size.height+5, self.lblChat.frame.size.width , 10))
+            let lblStatus = UILabel(frame: CGRectMake(startXChat, self.viewChat.frame.origin.y+self.viewChat.frame.size.height+5, self.lblChat.frame.size.width, 10))
             lblStatus.textAlignment =  .Right
             lblStatus.textColor = UIColor.darkGrayColor()
             lblStatus.font = UIFont.systemFontOfSize(10)
             lblStatus.text = objChat.chatStatus!
+            //lblStatus.backgroundColor = UIColor.darkGrayColor()
             self.addSubview(lblStatus)
         }
         
