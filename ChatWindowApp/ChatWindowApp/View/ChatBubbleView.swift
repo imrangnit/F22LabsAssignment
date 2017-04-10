@@ -96,7 +96,9 @@ class ChatBubbleView: UIView {
         }
         
         
-        self.frame = CGRectMake(newStartX, CGRectGetMinY(self.frame), CGRectGetWidth(frame), CGRectGetHeight(frame))
+        self.frame = CGRectMake(newStartX, CGRectGetMinY(self.frame), CGRectGetWidth(frame), bgImageNewHeight)
+        
+        print("BackGround Height: ",bgImageNewHeight,frame.size.height)
     }
     
     required init?(coder aDecoder: NSCoder) {

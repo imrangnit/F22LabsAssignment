@@ -18,7 +18,7 @@ class ViewController: UIViewController,UITextFieldDelegate {
     
     var selectedImage : UIImage?
     var lastChatBubbleY: CGFloat = 10.0
-    var internalPadding: CGFloat = 40.0
+    var internalPadding: CGFloat = 10.0
     var lastMessageType: Bool?
     @IBOutlet weak var bottomLayout:NSLayoutConstraint!
     
@@ -81,7 +81,7 @@ class ViewController: UIViewController,UITextFieldDelegate {
             self.bottomLayout.constant = keyboardFrame.size.height
             
         }) { (completed: Bool) -> Void in
-            //self.moveToLatestMessage()
+            self.moveToLatestMessage()
         }
     }
     
@@ -89,7 +89,7 @@ class ViewController: UIViewController,UITextFieldDelegate {
         UIView.animateWithDuration(1.0, animations: { () -> Void in
             self.bottomLayout.constant = 0.0
         }) { (completed: Bool) -> Void in
-            //self.moveToLatestMessage()
+            self.moveToLatestMessage()
         }
     }
     
@@ -171,6 +171,8 @@ class ViewController: UIViewController,UITextFieldDelegate {
         })*/
         
         self.scrlView.addSubview(chatBubble)
+        
+        print("BackGround Height: ",chatBubble.frame.size.height)
         
         lastChatBubbleY = CGRectGetMaxY(chatBubble.frame)
         
