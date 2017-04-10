@@ -153,10 +153,10 @@ class ViewController: UIViewController,UITextFieldDelegate {
         let padding:CGFloat = 80
         
         let chatBubble = ChatBubbleView(objChat: objChatData, yPosition: lastChatBubbleY+padding)
-        
+        /*
         UIView.animateWithDuration(0.7, animations: {
             
-            self.scrlView.addSubview(chatBubble)
+            
             var frame = chatBubble.frame
             frame.size.width = 0
             chatBubble.frame = frame
@@ -168,10 +168,9 @@ class ViewController: UIViewController,UITextFieldDelegate {
                 UIView.setAnimationDuration(5.3)
                 UIView.commitAnimations()
                 
-        })
+        })*/
         
-        
-        
+        self.scrlView.addSubview(chatBubble)
         
         lastChatBubbleY = CGRectGetMaxY(chatBubble.frame)
         
